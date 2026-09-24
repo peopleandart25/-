@@ -1,6 +1,7 @@
 import { useMemo, useState, type FormEvent } from "react";
 import { Pencil, Plus, Trash2 } from "lucide-react";
 import { FileImageButton } from "../../components/FileImageButton";
+import { GALLERY_CROP, PROFILE_CROP } from "../../components/ImageAdjustModal";
 import { useAgency } from "../../context/AgencyContext";
 import type { Artist } from "../../types";
 
@@ -246,8 +247,8 @@ export function ArtistManager() {
               프로필 이미지
             </p>
             <p className="mt-1 text-sm text-black">
-              권장 사이즈 900 × 1200 px (3:4 세로). 목록·상세 페이지에 세로로
-              잘려 보입니다.
+              권장 사이즈 900 × 1200 px (3:4 세로). 업로드 후 미리보기에서 얼굴
+              위치를 맞출 수 있습니다.
             </p>
             <div className="mt-3 flex flex-wrap items-end gap-4">
               {form.profileImage ? (
@@ -265,6 +266,8 @@ export function ArtistManager() {
               )}
               <FileImageButton
                 label="프로필 업로드"
+                crop={PROFILE_CROP}
+                maxEdge={1600}
                 onLoaded={(profileImage) =>
                   setForm((prev) => ({ ...prev, profileImage }))
                 }
@@ -293,14 +296,16 @@ export function ArtistManager() {
                   갤러리 이미지
                 </p>
                 <p className="mt-1 text-sm text-black">
-                  권장 사이즈 1080 × 1350 px (4:5 세로)
+                  권장 사이즈 1080 × 1350 px (4:5 세로). 업로드 후 미리보기에서
+                  구도를 조절하세요.
                 </p>
               </div>
               <FileImageButton
                 label="갤러리 추가"
                 compact
-                maxEdge={1400}
+                maxEdge={1600}
                 quality={0.78}
+                crop={GALLERY_CROP}
                 onLoaded={(image) =>
                   setForm((prev) => ({
                     ...prev,
@@ -315,7 +320,7 @@ export function ArtistManager() {
               <ul className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
                 {form.gallery.map((image, index) => (
                   <li key={`${index}-${image.slice(0, 24)}`} className="relative">
-                    <div className="aspect-[3/4] overflow-hidden bg-charcoal">
+                    <div className="aspect-[4/5] overflow-hidden bg-charcoal">
                       <img
                         src={image}
                         alt=""

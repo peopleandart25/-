@@ -1,5 +1,9 @@
 import { useState, type ChangeEvent } from "react";
 import { readImageFile } from "../lib/imageFile";
+import {
+  ImageAdjustModal,
+  type ImageCropSpec,
+} from "./ImageAdjustModal";
 
 interface FileImageButtonProps {
   label: string;
@@ -7,6 +11,7 @@ interface FileImageButtonProps {
   maxEdge?: number;
   quality?: number;
   compact?: boolean;
+  crop?: ImageCropSpec;
 }
 
 export function FileImageButton({
@@ -15,8 +20,10 @@ export function FileImageButton({
   maxEdge = 1600,
   quality = 0.8,
   compact = false,
+  crop,
 }: FileImageButtonProps) {
   const [error, setError] = useState("");
+  const [pending, setPending] = useState<string | null>(null);
 
   const onChange = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -24,7 +31,15 @@ export function FileImageButton({
     if (!file) return;
     setError("");
     try {
-      const dataUrl = await readImageFile(file, maxEdge, quality);
+      const dataUrl = await readImageFile(
+        file,
+        crop ? Math.max(maxEdge, 2400) : maxEdge,
+        crop ? 0.92 : quality,
+      );
+      if (crop) {
+        setPending(dataUrl);
+        return;
+      }
       onLoaded(dataUrl);
     } catch {
       setError("이미지를 읽을 수 없습니다.");
@@ -52,6 +67,17 @@ export function FileImageButton({
         <p className="mt-2 text-sm text-orange" role="alert">
           {error}
         </p>
+      ) : null}
+      {pending && crop ? (
+        <ImageAdjustModal
+          src={pending}
+          spec={crop}
+          onCancel={() => setPending(null)}
+          onConfirm={(dataUrl) => {
+            setPending(null);
+            onLoaded(dataUrl);
+          }}
+        />
       ) : null}
     </div>
   );

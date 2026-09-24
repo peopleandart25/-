@@ -1,4 +1,4 @@
-function loadImage(src: string) {
+export function loadImage(src: string) {
   return new Promise<HTMLImageElement>((resolve, reject) => {
     const image = new Image();
     image.onload = () => resolve(image);
@@ -51,4 +51,28 @@ export function readImageFile(
     };
     reader.readAsDataURL(file);
   });
+}
+
+export function cropToJpeg(
+  image: HTMLImageElement,
+  frame: { width: number; height: number },
+  transform: { x: number; y: number; scale: number },
+  output: { width: number; height: number; quality?: number },
+) {
+  const canvas = document.createElement("canvas");
+  canvas.width = output.width;
+  canvas.height = output.height;
+  const context = canvas.getContext("2d");
+  if (!context) return image.src;
+  context.fillStyle = "#000000";
+  context.fillRect(0, 0, canvas.width, canvas.height);
+  const ratio = output.width / frame.width;
+  context.drawImage(
+    image,
+    transform.x * ratio,
+    transform.y * ratio,
+    image.width * transform.scale * ratio,
+    image.height * transform.scale * ratio,
+  );
+  return canvas.toDataURL("image/jpeg", output.quality ?? 0.82);
 }

@@ -1,6 +1,7 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { ChevronDown, ChevronUp, Trash2 } from "lucide-react";
 import { FileImageButton } from "../../components/FileImageButton";
+import { BANNER_CROP } from "../../components/ImageAdjustModal";
 import { useAgency } from "../../context/AgencyContext";
 
 export function BannerManager() {
@@ -80,14 +81,15 @@ export function BannerManager() {
             권장 사이즈 1920 × 1080 px (16:9 가로)
           </p>
           <p className="mt-1 max-w-xl text-sm text-black">
-            화면 전체를 덮는 가로 이미지입니다. 모바일에서는 좌우가 잘릴 수 있으니
-            인물과 핵심 장면은 중앙에 두세요.
+            업로드하면 16:9 미리보기가 열립니다. 드래그와 확대로 실제 홈 화면
+            구도를 맞춘 뒤 적용하세요.
           </p>
         </div>
         <FileImageButton
           label="배너 이미지 추가"
           maxEdge={1920}
           quality={0.78}
+          crop={BANNER_CROP}
           onLoaded={onAdd}
         />
       </div>
@@ -138,6 +140,7 @@ export function BannerManager() {
                   compact
                   maxEdge={1920}
                   quality={0.78}
+                  crop={BANNER_CROP}
                   onLoaded={(image) => updateBanner(banner.id, { image })}
                 />
               </div>
