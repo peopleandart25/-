@@ -84,8 +84,8 @@ export function BannerManager() {
             권장 사이즈 1920 × 1080 px (16:9 가로)
           </p>
           <p className="mt-1 max-w-xl text-sm text-black">
-            업로드 시 16:9 미리보기가 열립니다. 이미 올린 배너는 크기 조절로
-            축소·확대·위치를 다시 맞출 수 있습니다.
+            업로드하면 PC·휴대폰 미리보기가 함께 열립니다. 드래그와 확대로
+            구도를 맞춘 뒤 적용하세요.
           </p>
         </div>
         <FileImageButton
