@@ -2,6 +2,9 @@ import { useEffect, useRef, useState, type PointerEvent } from "react";
 import { createPortal } from "react-dom";
 import { cropToJpeg, loadImage } from "../lib/imageFile";
 
+const MIN_ZOOM = 0.25;
+const MAX_ZOOM = 3;
+
 export interface ImageCropSpec {
   aspect: number;
   width: number;
@@ -15,7 +18,7 @@ export const BANNER_CROP: ImageCropSpec = {
   width: 1920,
   height: 1080,
   title: "메인 배너 미리보기",
-  hint: "홈 화면 가로 비율(16:9)입니다. 드래그로 위치를 옮기고, 확대로 구도를 맞추세요.",
+  hint: "홈 화면 가로 비율(16:9)입니다. 드래그로 위치를 옮기고, 축소·확대로 구도를 맞추세요.",
 };
 
 export const PROFILE_CROP: ImageCropSpec = {
@@ -89,15 +92,20 @@ export function ImageAdjustModal({
     return Math.max(width / image.width, height / image.height);
   };
 
+  const clampAxis = (pos: number, drawn: number, frame: number) => {
+    if (drawn >= frame) {
+      return Math.min(0, Math.max(frame - drawn, pos));
+    }
+    return Math.min(frame - drawn, Math.max(0, pos));
+  };
+
   const clampPosition = (nextX: number, nextY: number, scale: number) => {
     const frame = frameRef.current;
     if (!frame || !image) return { x: nextX, y: nextY };
     const { width, height } = frame.getBoundingClientRect();
-    const drawnW = image.width * scale;
-    const drawnH = image.height * scale;
     return {
-      x: Math.min(0, Math.max(width - drawnW, nextX)),
-      y: Math.min(0, Math.max(height - drawnH, nextY)),
+      x: clampAxis(nextX, image.width * scale, width),
+      y: clampAxis(nextY, image.height * scale, height),
     };
   };
 
@@ -112,9 +120,10 @@ export function ImageAdjustModal({
     setY((height - image.height * scale) / 2);
   }, [image]);
 
-  const applyZoom = (nextZoom: number) => {
+  const applyZoom = (rawZoom: number) => {
     const frame = frameRef.current;
     if (!frame || !image) return;
+    const nextZoom = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, rawZoom));
     const { width, height } = frame.getBoundingClientRect();
     const prev = coverScale() * zoom;
     const next = coverScale() * nextZoom;
@@ -219,20 +228,26 @@ export function ImageAdjustModal({
 
         <label className="mt-6 block">
           <span className="font-mono text-xs tracking-[0.16em] text-charcoal">
-            확대
+            축소 / 확대
           </span>
           <input
             type="range"
-            min={1}
-            max={3}
+            min={MIN_ZOOM}
+            max={MAX_ZOOM}
             step={0.01}
             value={zoom}
             onChange={(event) => applyZoom(Number(event.target.value))}
             className="mt-2 w-full accent-orange"
           />
+          <span className="mt-1 flex justify-between font-mono text-[10px] tracking-[0.12em] text-charcoal/60">
+            <span>축소</span>
+            <span>{Math.round(zoom * 100)}%</span>
+            <span>확대</span>
+          </span>
         </label>
         <p className="mt-2 text-sm text-charcoal/80">
-          미리보기 안을 드래그하면 사진 위치를 옮길 수 있습니다.
+          미리보기 안을 드래그하면 사진 위치를 옮길 수 있습니다. 축소하면 빈
+          공간은 검정으로 채워집니다.
         </p>
 
         <div className="mt-8 flex flex-wrap gap-3">
@@ -255,5 +270,48 @@ export function ImageAdjustModal({
       </div>
     </div>,
     document.body,
+  );
+}
+
+interface AdjustImageButtonProps {
+  src: string;
+  spec: ImageCropSpec;
+  onSaved: (dataUrl: string) => void;
+  compact?: boolean;
+}
+
+export function AdjustImageButton({
+  src,
+  spec,
+  onSaved,
+  compact = false,
+}: AdjustImageButtonProps) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className={`inline-flex items-center justify-center border border-charcoal/20 font-mono tracking-[0.16em] text-charcoal transition-colors duration-300 hover:border-orange hover:text-orange ${
+          compact
+            ? "px-3 py-2 text-[10px]"
+            : "px-4 py-2.5 text-[11px]"
+        }`}
+      >
+        크기 조절
+      </button>
+      {open ? (
+        <ImageAdjustModal
+          src={src}
+          spec={spec}
+          onCancel={() => setOpen(false)}
+          onConfirm={(dataUrl) => {
+            setOpen(false);
+            onSaved(dataUrl);
+          }}
+        />
+      ) : null}
+    </>
   );
 }

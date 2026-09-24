@@ -1,7 +1,10 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { ChevronDown, ChevronUp, Trash2 } from "lucide-react";
 import { FileImageButton } from "../../components/FileImageButton";
-import { BANNER_CROP } from "../../components/ImageAdjustModal";
+import {
+  AdjustImageButton,
+  BANNER_CROP,
+} from "../../components/ImageAdjustModal";
 import { useAgency } from "../../context/AgencyContext";
 
 export function BannerManager() {
@@ -81,8 +84,8 @@ export function BannerManager() {
             권장 사이즈 1920 × 1080 px (16:9 가로)
           </p>
           <p className="mt-1 max-w-xl text-sm text-black">
-            업로드하면 16:9 미리보기가 열립니다. 드래그와 확대로 실제 홈 화면
-            구도를 맞춘 뒤 적용하세요.
+            업로드 시 16:9 미리보기가 열립니다. 이미 올린 배너는 크기 조절로
+            축소·확대·위치를 다시 맞출 수 있습니다.
           </p>
         </div>
         <FileImageButton
@@ -135,14 +138,22 @@ export function BannerManager() {
                     className="mt-1 w-full border-0 border-b border-charcoal/20 bg-transparent py-2 text-sm text-charcoal outline-none focus:border-orange"
                   />
                 </label>
-                <FileImageButton
-                  label="이미지 교체"
-                  compact
-                  maxEdge={1920}
-                  quality={0.78}
-                  crop={BANNER_CROP}
-                  onLoaded={(image) => updateBanner(banner.id, { image })}
-                />
+                <div className="flex flex-wrap gap-2 md:col-span-2">
+                  <FileImageButton
+                    label="이미지 교체"
+                    compact
+                    maxEdge={1920}
+                    quality={0.78}
+                    crop={BANNER_CROP}
+                    onLoaded={(image) => updateBanner(banner.id, { image })}
+                  />
+                  <AdjustImageButton
+                    src={banner.image}
+                    spec={BANNER_CROP}
+                    compact
+                    onSaved={(image) => updateBanner(banner.id, { image })}
+                  />
+                </div>
               </div>
               <div className="flex gap-2 md:flex-col">
                 <button
