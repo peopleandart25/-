@@ -8,6 +8,7 @@ export function ScrollToTopButton() {
   const reduceMotion = useReducedMotion();
   const [scrolled, setScrolled] = useState(false);
   const isHome = location.pathname === "/";
+  const isAdmin = location.pathname === "/admin";
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 480);
@@ -16,7 +17,7 @@ export function ScrollToTopButton() {
     return () => window.removeEventListener("scroll", onScroll);
   }, [location.pathname]);
 
-  const visible = !isHome && scrolled;
+  const visible = !isHome && !isAdmin && scrolled;
 
   return (
     <AnimatePresence>

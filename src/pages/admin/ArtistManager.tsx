@@ -1,7 +1,11 @@
 import { useMemo, useState, type FormEvent } from "react";
 import { Pencil, Plus, Trash2 } from "lucide-react";
 import { FileImageButton } from "../../components/FileImageButton";
-import { GALLERY_CROP, PROFILE_CROP } from "../../components/ImageAdjustModal";
+import {
+  AdjustImageButton,
+  GALLERY_CROP,
+  PROFILE_CROP,
+} from "../../components/ImageAdjustModal";
 import { useAgency } from "../../context/AgencyContext";
 import type { Artist } from "../../types";
 
@@ -80,7 +84,7 @@ export function ArtistManager() {
           <h2 className="font-display text-2xl text-charcoal">아티스트 프로필 관리</h2>
           <p className="mt-2 max-w-xl text-sm text-black">
             카테고리를 고른 뒤 아티스트를 추가하거나 수정합니다. 프로필·갤러리
-            이미지는 파일 업로드 후 이 브라우저에 저장됩니다.
+            이미지는 사이트 서버에 저장되어 휴대폰에서도 같습니다.
           </p>
           <p className="mt-3 font-mono text-sm tracking-[0.08em] text-orange">
             프로필 900 × 1200 px (3:4 세로)
@@ -158,7 +162,7 @@ export function ArtistManager() {
                 type="button"
                 aria-label="수정"
                 onClick={() => openEdit(artist)}
-                className="flex h-9 w-9 items-center justify-center text-black hover:text-orange"
+                className="flex h-11 w-11 items-center justify-center text-black hover:text-orange"
               >
                 <Pencil size={15} />
               </button>
@@ -171,7 +175,7 @@ export function ArtistManager() {
                     removeArtist(artist.id);
                   }
                 }}
-                className="flex h-9 w-9 items-center justify-center text-black hover:text-orange"
+                className="flex h-11 w-11 items-center justify-center text-black hover:text-orange"
               >
                 <Trash2 size={15} />
               </button>
@@ -264,14 +268,26 @@ export function ArtistManager() {
                   NO IMAGE
                 </div>
               )}
-              <FileImageButton
-                label="프로필 업로드"
-                crop={PROFILE_CROP}
-                maxEdge={1600}
-                onLoaded={(profileImage) =>
-                  setForm((prev) => ({ ...prev, profileImage }))
-                }
-              />
+              <div className="flex flex-wrap gap-2">
+                <FileImageButton
+                  label="프로필 업로드"
+                  crop={PROFILE_CROP}
+                  maxEdge={1600}
+                  onLoaded={(profileImage) =>
+                    setForm((prev) => ({ ...prev, profileImage }))
+                  }
+                />
+                {form.profileImage ? (
+                  <AdjustImageButton
+                    src={form.profileImage}
+                    spec={PROFILE_CROP}
+                    compact
+                    onSaved={(profileImage) =>
+                      setForm((prev) => ({ ...prev, profileImage }))
+                    }
+                  />
+                ) : null}
+              </div>
             </div>
           </div>
 
@@ -327,18 +343,33 @@ export function ArtistManager() {
                         className="h-full w-full object-cover"
                       />
                     </div>
-                    <button
-                      type="button"
-                      className="absolute right-2 top-2 bg-white/80 px-2 py-1 font-mono text-[10px] tracking-[0.14em] text-charcoal hover:text-orange"
-                      onClick={() =>
-                        setForm((prev) => ({
-                          ...prev,
-                          gallery: prev.gallery.filter((_, i) => i !== index),
-                        }))
-                      }
-                    >
-                      삭제
-                    </button>
+                    <div className="absolute right-2 top-2 flex flex-col gap-1">
+                      <AdjustImageButton
+                        src={image}
+                        spec={GALLERY_CROP}
+                        compact
+                        onSaved={(next) =>
+                          setForm((prev) => ({
+                            ...prev,
+                            gallery: prev.gallery.map((item, i) =>
+                              i === index ? next : item,
+                            ),
+                          }))
+                        }
+                      />
+                      <button
+                        type="button"
+                        className="min-h-11 bg-white/80 px-2 py-1 font-mono text-[11px] tracking-[0.14em] text-charcoal hover:text-orange"
+                        onClick={() =>
+                          setForm((prev) => ({
+                            ...prev,
+                            gallery: prev.gallery.filter((_, i) => i !== index),
+                          }))
+                        }
+                      >
+                        삭제
+                      </button>
+                    </div>
                   </li>
                 ))}
               </ul>

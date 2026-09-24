@@ -62,8 +62,8 @@ export function NewsManager() {
         <div>
           <h2 className="font-display text-3xl text-charcoal">뉴스 게시판 관리</h2>
           <p className="mt-2 max-w-xl text-lg text-black">
-            NEWS 페이지에 노출될 소식을 등록합니다. 썸네일 이미지는 이 브라우저에
-            Base64로 저장됩니다.
+            NEWS 페이지에 노출될 소식을 등록합니다. 썸네일은 사이트 서버에
+            저장됩니다.
           </p>
         </div>
         <button

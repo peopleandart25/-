@@ -78,7 +78,7 @@ export function BannerManager() {
           <h2 className="font-display text-2xl text-charcoal">메인 배너 관리</h2>
           <p className="mt-2 max-w-xl text-sm text-black">
             홈 화면 풀스크린 슬라이더에 들어갈 이미지를 추가하고 순서를 바꿉니다.
-            이미지는 이 브라우저에 저장됩니다.
+            이미지는 사이트 서버에 저장되어 PC와 휴대폰에서 같이 보입니다.
           </p>
           <p className="mt-3 font-mono text-sm tracking-[0.08em] text-orange">
             권장 사이즈 1920 × 1080 px (16:9 가로)
@@ -161,7 +161,7 @@ export function BannerManager() {
                   aria-label="위로"
                   disabled={index === 0}
                   onClick={() => moveBanner(banner.id, "up")}
-                  className="flex h-9 w-9 items-center justify-center text-black hover:text-orange disabled:opacity-25"
+                  className="flex h-11 w-11 items-center justify-center text-black hover:text-orange disabled:opacity-25"
                 >
                   <ChevronUp size={16} />
                 </button>
@@ -170,7 +170,7 @@ export function BannerManager() {
                   aria-label="아래로"
                   disabled={index === banners.length - 1}
                   onClick={() => moveBanner(banner.id, "down")}
-                  className="flex h-9 w-9 items-center justify-center text-black hover:text-orange disabled:opacity-25"
+                  className="flex h-11 w-11 items-center justify-center text-black hover:text-orange disabled:opacity-25"
                 >
                   <ChevronDown size={16} />
                 </button>
@@ -182,7 +182,7 @@ export function BannerManager() {
                       removeBanner(banner.id);
                     }
                   }}
-                  className="flex h-9 w-9 items-center justify-center text-black hover:text-orange"
+                  className="flex h-11 w-11 items-center justify-center text-black hover:text-orange"
                 >
                   <Trash2 size={15} />
                 </button>

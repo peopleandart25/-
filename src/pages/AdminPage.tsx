@@ -47,7 +47,7 @@ function AdminLogin({ onSuccess }: { onSuccess: () => void }) {
   };
 
   return (
-    <main id="main" className="min-h-dvh bg-white pt-24 pb-20 md:pt-44 md:pb-24">
+    <main id="main" className="admin-ui min-h-dvh bg-white pt-24 pb-28 md:pt-44 md:pb-24">
       <div className="editorial-grid max-w-xl">
         <p className="font-mono text-base tracking-[0.22em] text-orange">
           ADMIN
@@ -104,7 +104,14 @@ function AdminLogin({ onSuccess }: { onSuccess: () => void }) {
 }
 
 export function AdminPage() {
-  const { storageError, clearStorageError, resetAll, inquiries } = useAgency();
+  const {
+    storageError,
+    clearStorageError,
+    resetAll,
+    inquiries,
+    cmsConfigured,
+    syncStatus,
+  } = useAgency();
   const [tab, setTab] = useState<TabId>("inquiries");
   const [loggedIn, setLoggedIn] = useState(isAdminLoggedIn);
 
@@ -113,7 +120,7 @@ export function AdminPage() {
   }
 
   return (
-    <main id="main" className="min-h-dvh bg-white pt-24 pb-20 md:pt-44 md:pb-24">
+    <main id="main" className="admin-ui min-h-dvh bg-white pt-24 pb-28 md:pt-44 md:pb-24">
       <div className="editorial-grid">
         <p className="font-mono text-base tracking-[0.22em] text-orange">
           ADMIN
@@ -122,8 +129,15 @@ export function AdminPage() {
           사이트 운영
         </h1>
         <p className="mt-4 max-w-2xl text-base text-black md:text-lg">
-          Footer, About, 배너, 아티스트, 뉴스, 문의를 이 브라우저에 저장합니다.
-          새로고침 후에도 유지되며, 공개 페이지에 바로 반영됩니다.
+          Footer, About, 배너, 아티스트, 뉴스, 문의를 수정합니다. 저장하면
+          사이트 서버에 올라가서 PC와 휴대폰에서 같이 보입니다.
+        </p>
+        <p className="mt-3 max-w-2xl text-sm text-black">
+          {syncStatus === "loading"
+            ? "사이트 데이터를 불러오는 중입니다."
+            : cmsConfigured && syncStatus === "remote"
+              ? "지금 이 내용은 사이트 전체에 공유됩니다. 휴대폰에서 새로고침하면 같은 배너·아티스트가 보입니다."
+              : "아직 서버 저장이 연결되지 않아 이 컴퓨터 브라우저에만 저장됩니다. Vercel Storage에서 Blob을 만든 뒤 이 프로젝트에 연결하고 다시 배포해야 휴대폰에도 반영됩니다."}
         </p>
 
         <div className="mt-6 flex flex-wrap gap-5">
@@ -173,7 +187,7 @@ export function AdminPage() {
         ) : null}
 
         <div
-          className="mt-12 flex flex-wrap gap-2 border-b border-charcoal/10"
+          className="-mx-4 mt-12 flex gap-1 overflow-x-auto border-b border-charcoal/10 px-4 md:mx-0 md:flex-wrap md:gap-2 md:overflow-visible md:px-0"
           role="tablist"
           aria-label="관리 메뉴"
         >
@@ -184,7 +198,7 @@ export function AdminPage() {
               role="tab"
               aria-selected={tab === item.id}
               onClick={() => setTab(item.id)}
-              className={`px-4 py-3 font-mono text-base tracking-[0.18em] transition-colors duration-300 md:text-lg ${
+              className={`shrink-0 px-3 py-3 font-mono text-sm tracking-[0.16em] transition-colors duration-300 md:px-4 md:text-lg md:tracking-[0.18em] ${
                 tab === item.id
                   ? "border-b-2 border-orange text-black"
                   : "text-black hover:text-orange"

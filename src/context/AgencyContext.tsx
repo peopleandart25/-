@@ -2,12 +2,16 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from "react";
 import { defaultAgencyData } from "../data/defaults";
 import { createId, slugify } from "../lib/id";
+import { getAdminPassword, isAdminLoggedIn } from "../lib/adminAuth";
+import { fetchAgency, postInquiry, saveAgency } from "../lib/cmsClient";
 import type {
   AgencyData,
   Artist,
@@ -180,21 +184,24 @@ function parseCopy(value: unknown): SiteCopy {
   };
 }
 
+function parseAgencyData(parsed: unknown): AgencyData {
+  if (!isRecord(parsed)) return defaultAgencyData;
+  return {
+    banners: parseBanners(parsed.banners),
+    categories: parseCategories(parsed.categories),
+    artists: parseArtists(parsed.artists),
+    news: parseNews(parsed.news),
+    inquiries: parseInquiries(parsed.inquiries),
+    copy: parseCopy(parsed.copy),
+    footer: parseFooter(parsed.footer),
+  };
+}
+
 function readStoredData(): AgencyData {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return defaultAgencyData;
-    const parsed = JSON.parse(raw) as unknown;
-    if (!isRecord(parsed)) return defaultAgencyData;
-    return {
-      banners: parseBanners(parsed.banners),
-      categories: parseCategories(parsed.categories),
-      artists: parseArtists(parsed.artists),
-      news: parseNews(parsed.news),
-      inquiries: parseInquiries(parsed.inquiries),
-      copy: parseCopy(parsed.copy),
-      footer: parseFooter(parsed.footer),
-    };
+    return parseAgencyData(JSON.parse(raw) as unknown);
   } catch {
     return defaultAgencyData;
   }
@@ -212,6 +219,8 @@ interface AgencyContextValue {
   copy: SiteCopy;
   footer: FooterInfo;
   storageError: string | null;
+  cmsConfigured: boolean;
+  syncStatus: "loading" | "remote" | "local";
   clearStorageError: () => void;
   addBanner: (input: Pick<Banner, "image" | "title" | "subtitle">) => boolean;
   updateBanner: (id: string, patch: Partial<Banner>) => boolean;
@@ -248,8 +257,17 @@ const AgencyContext = createContext<AgencyContextValue | null>(null);
 export function AgencyProvider({ children }: { children: ReactNode }) {
   const [data, setData] = useState<AgencyData>(readStoredData);
   const [storageError, setStorageError] = useState<string | null>(null);
+  const [cmsConfigured, setCmsConfigured] = useState(false);
+  const [syncStatus, setSyncStatus] = useState<"loading" | "remote" | "local">(
+    "loading",
+  );
+  const dataRef = useRef(data);
+  const dirtyRef = useRef(false);
+  const cmsConfiguredRef = useRef(false);
+  const pushTimer = useRef(0);
+  dataRef.current = data;
 
-  const commit = useCallback((next: AgencyData) => {
+  const persistLocal = useCallback((next: AgencyData) => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
       setData(next);
@@ -260,6 +278,69 @@ export function AgencyProvider({ children }: { children: ReactNode }) {
       return false;
     }
   }, []);
+
+  const schedulePush = useCallback((next: AgencyData) => {
+    if (!cmsConfiguredRef.current || !isAdminLoggedIn()) return;
+    window.clearTimeout(pushTimer.current);
+    pushTimer.current = window.setTimeout(() => {
+      void (async () => {
+        try {
+          const saved = await saveAgency(next, getAdminPassword());
+          persistLocal(saved);
+          setSyncStatus("remote");
+        } catch {
+          setStorageError(
+            "이 기기에는 저장됐지만, 사이트 전체에 반영하지 못했습니다. 네트워크를 확인한 뒤 다시 저장해 주세요.",
+          );
+        }
+      })();
+    }, 700);
+  }, [persistLocal]);
+
+  const commit = useCallback(
+    (next: AgencyData) => {
+      dirtyRef.current = true;
+      const ok = persistLocal(next);
+      if (ok) schedulePush(next);
+      return ok;
+    },
+    [persistLocal, schedulePush],
+  );
+
+  useEffect(() => {
+    let cancelled = false;
+    const password = isAdminLoggedIn() ? getAdminPassword() : undefined;
+    void fetchAgency(password).then((snapshot) => {
+      if (cancelled) return;
+      cmsConfiguredRef.current = snapshot.configured;
+      setCmsConfigured(snapshot.configured);
+      if (dirtyRef.current) {
+        setSyncStatus(snapshot.configured ? "remote" : "local");
+        if (snapshot.configured) schedulePush(dataRef.current);
+        return;
+      }
+      if (snapshot.data) {
+        const local = readStoredData();
+        const next = parseAgencyData({
+          ...snapshot.data,
+          inquiries: isAdminLoggedIn()
+            ? snapshot.data.inquiries
+            : local.inquiries,
+        });
+        persistLocal(next);
+        setSyncStatus("remote");
+        return;
+      }
+      setSyncStatus(snapshot.configured ? "remote" : "local");
+      if (snapshot.configured && isAdminLoggedIn()) {
+        schedulePush(readStoredData());
+      }
+    });
+    return () => {
+      cancelled = true;
+      window.clearTimeout(pushTimer.current);
+    };
+  }, [persistLocal, schedulePush]);
 
   const addBanner = useCallback(
     (input: Pick<Banner, "image" | "title" | "subtitle">) => {
@@ -476,25 +557,26 @@ export function AgencyProvider({ children }: { children: ReactNode }) {
   );
 
   const addInquiry = useCallback(
-    (input: Omit<Inquiry, "id" | "createdAt" | "read">) =>
-      commit({
+    (input: Omit<Inquiry, "id" | "createdAt" | "read">) => {
+      const inquiry: Inquiry = {
+        id: createId("inquiry"),
+        name: input.name.trim(),
+        company: input.company.trim(),
+        phone: input.phone.trim(),
+        type: input.type,
+        typeLabel: input.typeLabel.trim(),
+        message: input.message.trim(),
+        createdAt: new Date().toISOString(),
+        read: false,
+      };
+      const ok = persistLocal({
         ...data,
-        inquiries: [
-          {
-            id: createId("inquiry"),
-            name: input.name.trim(),
-            company: input.company.trim(),
-            phone: input.phone.trim(),
-            type: input.type,
-            typeLabel: input.typeLabel.trim(),
-            message: input.message.trim(),
-            createdAt: new Date().toISOString(),
-            read: false,
-          },
-          ...(data.inquiries ?? []),
-        ],
-      }),
-    [commit, data],
+        inquiries: [inquiry, ...(data.inquiries ?? [])],
+      });
+      if (ok) void postInquiry(inquiry);
+      return ok;
+    },
+    [data, persistLocal],
   );
 
   const markInquiryRead = useCallback(
@@ -562,7 +644,9 @@ export function AgencyProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem(STORAGE_KEY);
     setStorageError(null);
     setData(defaultAgencyData);
-  }, []);
+    dirtyRef.current = true;
+    schedulePush(defaultAgencyData);
+  }, [schedulePush]);
 
   const clearStorageError = useCallback(() => setStorageError(null), []);
 
@@ -576,6 +660,8 @@ export function AgencyProvider({ children }: { children: ReactNode }) {
       copy: { ...defaultAgencyData.copy, ...data.copy },
       footer: data.footer ?? defaultAgencyData.footer,
       storageError,
+      cmsConfigured,
+      syncStatus,
       clearStorageError,
       addBanner,
       updateBanner,
@@ -630,6 +716,8 @@ export function AgencyProvider({ children }: { children: ReactNode }) {
       removeNews,
       resetAll,
       storageError,
+      cmsConfigured,
+      syncStatus,
       updateArtist,
       updateBanner,
       updateCategory,

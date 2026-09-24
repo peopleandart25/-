@@ -182,17 +182,22 @@ export function ImageAdjustModal({
   const scale = coverScale() * zoom;
 
   return createPortal(
-    <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/55 p-4">
-      <div className="w-full max-w-3xl bg-white p-5 shadow-2xl md:p-8">
+    <div className="fixed inset-0 z-[80] flex items-end justify-center overflow-y-auto bg-black/55 sm:items-center sm:p-4">
+      <div className="flex max-h-[100dvh] w-full max-w-3xl flex-col overflow-y-auto bg-white p-4 pb-[max(1.25rem,env(safe-area-inset-bottom))] shadow-2xl md:max-h-[92vh] md:p-8">
         <p className="font-mono text-sm tracking-[0.18em] text-orange">
           IMAGE PREVIEW
         </p>
-        <h2 className="mt-2 font-display text-3xl text-charcoal">{spec.title}</h2>
+        <h2 className="mt-2 font-display text-2xl text-charcoal md:text-3xl">
+          {spec.title}
+        </h2>
         <p className="mt-2 text-sm text-charcoal">{spec.hint}</p>
 
         <div
-          className="mt-6 mx-auto w-full max-w-2xl overflow-hidden bg-ink"
-          style={{ aspectRatio: String(spec.aspect) }}
+          className="mx-auto mt-4 w-full max-w-2xl overflow-hidden bg-ink md:mt-6"
+          style={{
+            aspectRatio: String(spec.aspect),
+            maxHeight: "min(42dvh, 420px)",
+          }}
         >
           <div
             ref={frameRef}
@@ -237,7 +242,7 @@ export function ImageAdjustModal({
             step={0.01}
             value={zoom}
             onChange={(event) => applyZoom(Number(event.target.value))}
-            className="mt-2 w-full accent-orange"
+            className="mt-2 h-11 w-full accent-orange"
           />
           <span className="mt-1 flex justify-between font-mono text-[10px] tracking-[0.12em] text-charcoal/60">
             <span>축소</span>
@@ -250,19 +255,19 @@ export function ImageAdjustModal({
           공간은 검정으로 채워집니다.
         </p>
 
-        <div className="mt-8 flex flex-wrap gap-3">
+        <div className="sticky bottom-0 mt-6 flex flex-wrap gap-3 bg-white pt-3 md:mt-8">
           <button
             type="button"
             onClick={confirm}
             disabled={!image || saving}
-            className="bg-orange px-8 py-3 font-mono text-sm tracking-[0.18em] text-charcoal hover:bg-orange-deep disabled:opacity-40"
+            className="min-h-11 bg-orange px-8 py-3 font-mono text-sm tracking-[0.18em] text-charcoal hover:bg-orange-deep disabled:opacity-40"
           >
             이 구도로 적용
           </button>
           <button
             type="button"
             onClick={onCancel}
-            className="px-6 py-3 font-mono text-sm tracking-[0.18em] text-charcoal hover:text-orange"
+            className="min-h-11 px-6 py-3 font-mono text-sm tracking-[0.18em] text-charcoal hover:text-orange"
           >
             취소
           </button>
@@ -293,10 +298,8 @@ export function AdjustImageButton({
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className={`inline-flex items-center justify-center border border-charcoal/20 font-mono tracking-[0.16em] text-charcoal transition-colors duration-300 hover:border-orange hover:text-orange ${
-          compact
-            ? "px-3 py-2 text-[10px]"
-            : "px-4 py-2.5 text-[11px]"
+        className={`inline-flex min-h-11 items-center justify-center border border-charcoal/20 font-mono tracking-[0.16em] text-charcoal transition-colors duration-300 hover:border-orange hover:text-orange ${
+          compact ? "px-3 py-2.5 text-[11px]" : "px-4 py-2.5 text-[11px]"
         }`}
       >
         크기 조절

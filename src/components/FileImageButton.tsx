@@ -49,9 +49,9 @@ export function FileImageButton({
   return (
     <div>
       <label
-        className={`inline-flex cursor-pointer items-center justify-center border border-charcoal/20 font-mono tracking-[0.16em] text-charcoal transition-colors duration-300 hover:border-orange hover:text-orange ${
+        className={`relative inline-flex min-h-11 cursor-pointer items-center justify-center overflow-hidden border border-charcoal/20 font-mono tracking-[0.16em] text-charcoal transition-colors duration-300 hover:border-orange hover:text-orange ${
           compact
-            ? "px-3 py-2 text-[10px]"
+            ? "px-3 py-2.5 text-[11px]"
             : "px-4 py-2.5 text-[11px]"
         }`}
       >
@@ -59,7 +59,7 @@ export function FileImageButton({
         <input
           type="file"
           accept="image/*"
-          className="sr-only"
+          className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
           onChange={onChange}
         />
       </label>
