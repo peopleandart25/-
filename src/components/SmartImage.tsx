@@ -6,6 +6,7 @@ interface SmartImageProps {
   className?: string;
   imgClassName?: string;
   objectPosition?: string;
+  fit?: "cover" | "contain";
   priority?: boolean;
 }
 
@@ -15,6 +16,7 @@ export function SmartImage({
   className = "",
   imgClassName = "",
   objectPosition = "center",
+  fit = "cover",
   priority = false,
 }: SmartImageProps) {
   const [status, setStatus] = useState<"loading" | "loaded" | "error">(
@@ -58,7 +60,7 @@ export function SmartImage({
           decoding="async"
           onLoad={() => setStatus("loaded")}
           onError={() => setStatus("error")}
-          className={`h-full w-full object-cover transition-[opacity,transform] duration-[800ms] ease-out ${
+          className={`h-full w-full ${fit === "contain" ? "object-contain" : "object-cover"} transition-[opacity,transform] duration-[800ms] ease-out ${
             status === "loaded" ? "opacity-100" : "opacity-0"
           } ${imgClassName}`}
           style={{ objectPosition }}

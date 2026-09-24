@@ -80,7 +80,9 @@ export function HomePage() {
                     src={slide.image}
                     alt={slide.title || BRAND_SHORT}
                     priority={index === 0}
-                    className="h-full w-full bg-transparent"
+                    fit="contain"
+                    objectPosition="center"
+                    className="h-full w-full bg-ink"
                   />
                 </div>
               ) : null}
