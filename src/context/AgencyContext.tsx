@@ -78,11 +78,12 @@ function parseBanners(value: unknown): Banner[] {
     .map((item, index) => ({
       id: asString(item.id, createId("banner")),
       image: asString(item.image),
+      imageMobile: asString(item.imageMobile),
       title: asString(item.title),
       subtitle: asString(item.subtitle),
       order: asNumber(item.order, index),
     }))
-    .filter((item) => item.image);
+    .filter((item) => item.image || item.imageMobile);
   return parsed.length > 0 ? parsed : defaultAgencyData.banners;
 }
 
@@ -222,7 +223,9 @@ interface AgencyContextValue {
   cmsConfigured: boolean;
   syncStatus: "loading" | "remote" | "local";
   clearStorageError: () => void;
-  addBanner: (input: Pick<Banner, "image" | "title" | "subtitle">) => boolean;
+  addBanner: (
+    input?: Partial<Pick<Banner, "image" | "imageMobile" | "title" | "subtitle">>,
+  ) => boolean;
   updateBanner: (id: string, patch: Partial<Banner>) => boolean;
   removeBanner: (id: string) => boolean;
   moveBanner: (id: string, direction: "up" | "down") => boolean;
@@ -343,7 +346,11 @@ export function AgencyProvider({ children }: { children: ReactNode }) {
   }, [persistLocal, schedulePush]);
 
   const addBanner = useCallback(
-    (input: Pick<Banner, "image" | "title" | "subtitle">) => {
+    (
+      input: Partial<
+        Pick<Banner, "image" | "imageMobile" | "title" | "subtitle">
+      > = {},
+    ) => {
       const banners = sortByOrder(data.banners);
       return commit({
         ...data,
@@ -351,9 +358,10 @@ export function AgencyProvider({ children }: { children: ReactNode }) {
           ...banners,
           {
             id: createId("banner"),
-            image: input.image,
-            title: input.title,
-            subtitle: input.subtitle,
+            image: input.image ?? "",
+            imageMobile: input.imageMobile ?? "",
+            title: input.title ?? "",
+            subtitle: input.subtitle ?? "",
             order: banners.length,
           },
         ]),

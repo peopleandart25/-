@@ -19,6 +19,7 @@ export const defaultBanners: Banner[] = [
     id: "banner-main",
     image:
       "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=2400&q=80",
+    imageMobile: "",
     title: "P.A E&M",
     subtitle: "MAKE YOUR OWN LIGHT.",
     order: 0,
@@ -27,6 +28,7 @@ export const defaultBanners: Banner[] = [
     id: "banner-seojin",
     image:
       "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=2400&q=80",
+    imageMobile: "",
     title: "SEOJIN YOON",
     subtitle: "ACTOR",
     order: 1,
@@ -35,6 +37,7 @@ export const defaultBanners: Banner[] = [
     id: "banner-doyun",
     image:
       "https://images.unsplash.com/photo-1488161628813-04466f872be2?auto=format&fit=crop&w=2400&q=80",
+    imageMobile: "",
     title: "DOYUN HAN",
     subtitle: "MUSICIAN",
     order: 2,
@@ -43,6 +46,7 @@ export const defaultBanners: Banner[] = [
     id: "banner-harin",
     image:
       "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=2400&q=80",
+    imageMobile: "",
     title: "HARIN KIM",
     subtitle: "ACTOR",
     order: 3,
@@ -51,6 +55,7 @@ export const defaultBanners: Banner[] = [
     id: "banner-soyul",
     image:
       "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=2400&q=80",
+    imageMobile: "",
     title: "SOYUL PARK",
     subtitle: "CREATOR",
     order: 4,

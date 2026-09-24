@@ -11,16 +11,25 @@ export interface ImageCropSpec {
   height: number;
   title: string;
   hint: string;
-  showMobilePreview?: boolean;
+  chrome?: "desktop" | "phone";
 }
 
 export const BANNER_CROP: ImageCropSpec = {
   aspect: 16 / 9,
   width: 1920,
   height: 1080,
-  title: "메인 배너 미리보기",
-  hint: "왼쪽은 PC 홈 화면(16:9), 오른쪽은 휴대폰 풀화면입니다. 드래그와 축소·확대로 구도를 맞추세요.",
-  showMobilePreview: true,
+  title: "PC 배너 미리보기",
+  hint: "PC 홈 화면 가로 비율(16:9)입니다. 드래그와 축소·확대로 구도를 맞추세요.",
+  chrome: "desktop",
+};
+
+export const BANNER_MOBILE_CROP: ImageCropSpec = {
+  aspect: 9 / 19.5,
+  width: 1080,
+  height: 2340,
+  title: "모바일 배너 미리보기",
+  hint: "휴대폰 풀화면 세로 비율입니다. 얼굴과 핵심 장면이 잘리지 않게 맞춰 주세요.",
+  chrome: "phone",
 };
 
 export const PROFILE_CROP: ImageCropSpec = {
@@ -62,8 +71,6 @@ export function ImageAdjustModal({
   const [y, setY] = useState(0);
   const [saving, setSaving] = useState(false);
 
-  const [frameSize, setFrameSize] = useState({ width: 1, height: 1 });
-
   useEffect(() => {
     let active = true;
     loadImage(src)
@@ -88,21 +95,6 @@ export function ImageAdjustModal({
       document.removeEventListener("keydown", onKey);
     };
   }, [onCancel]);
-
-  useEffect(() => {
-    const frame = frameRef.current;
-    if (!frame) return;
-    const update = () => {
-      const rect = frame.getBoundingClientRect();
-      if (rect.width > 0 && rect.height > 0) {
-        setFrameSize({ width: rect.width, height: rect.height });
-      }
-    };
-    update();
-    const observer = new ResizeObserver(update);
-    observer.observe(frame);
-    return () => observer.disconnect();
-  }, [image]);
 
   const coverScale = () => {
     const frame = frameRef.current;
@@ -199,20 +191,52 @@ export function ImageAdjustModal({
   };
 
   const scale = coverScale() * zoom;
-  const phoneWidth = 160;
-  const phoneHeight = phoneWidth * (19.5 / 9);
-  const phoneInnerWidth = phoneHeight * (16 / 9);
-  const phoneRatio =
-    frameSize.width > 8 ? phoneInnerWidth / frameSize.width : 0;
-  const showMobile = Boolean(spec.showMobilePreview);
+  const chrome = spec.chrome;
+  const cropFrame = (
+    <div
+      className="overflow-hidden bg-ink"
+      style={{
+        aspectRatio: String(spec.aspect),
+        maxHeight:
+          chrome === "phone" ? "min(56dvh, 560px)" : "min(42dvh, 420px)",
+      }}
+    >
+      <div
+        ref={frameRef}
+        className="relative h-full w-full cursor-grab touch-none active:cursor-grabbing"
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerUp}
+        onPointerCancel={onPointerUp}
+      >
+        {image ? (
+          <img
+            src={src}
+            alt=""
+            draggable={false}
+            className="absolute max-w-none select-none"
+            style={{
+              width: image.width * scale,
+              height: image.height * scale,
+              transform: `translate(${x}px, ${y}px)`,
+            }}
+          />
+        ) : (
+          <div className="flex h-full items-center justify-center font-mono text-sm text-white/50">
+            이미지를 불러오는 중
+          </div>
+        )}
+        <div
+          className="pointer-events-none absolute inset-0 ring-1 ring-white/40"
+          aria-hidden
+        />
+      </div>
+    </div>
+  );
 
   return createPortal(
     <div className="fixed inset-0 z-[80] flex items-end justify-center overflow-y-auto bg-black/55 sm:items-center sm:p-4">
-      <div
-        className={`flex max-h-[100dvh] w-full flex-col overflow-y-auto bg-white p-4 pb-[max(1.25rem,env(safe-area-inset-bottom))] shadow-2xl md:max-h-[92vh] md:p-8 ${
-          showMobile ? "max-w-5xl" : "max-w-3xl"
-        }`}
-      >
+      <div className="flex max-h-[100dvh] w-full max-w-3xl flex-col overflow-y-auto bg-white p-4 pb-[max(1.25rem,env(safe-area-inset-bottom))] shadow-2xl md:max-h-[92vh] md:p-8">
         <p className="font-mono text-sm tracking-[0.18em] text-orange">
           IMAGE PREVIEW
         </p>
@@ -221,108 +245,28 @@ export function ImageAdjustModal({
         </h2>
         <p className="mt-2 text-sm text-charcoal">{spec.hint}</p>
 
-        <div
-          className={`mt-4 md:mt-6 ${
-            showMobile
-              ? "flex flex-col items-center gap-6 lg:flex-row lg:items-start"
-              : ""
-          }`}
-        >
-          <div className="min-w-0 w-full flex-1">
-            {showMobile ? (
-              <p className="mb-2 font-mono text-[10px] tracking-[0.16em] text-charcoal">
-                PC 화면 · 16:9
-              </p>
-            ) : null}
-            <div
-              className="mx-auto w-full max-w-2xl overflow-hidden bg-ink"
-              style={{
-                aspectRatio: String(spec.aspect),
-                maxHeight: "min(42dvh, 420px)",
-              }}
-            >
-              <div
-                ref={frameRef}
-                className="relative h-full w-full cursor-grab touch-none active:cursor-grabbing"
-                onPointerDown={onPointerDown}
-                onPointerMove={onPointerMove}
-                onPointerUp={onPointerUp}
-                onPointerCancel={onPointerUp}
-              >
-                {image ? (
-                  <img
-                    src={src}
-                    alt=""
-                    draggable={false}
-                    className="absolute max-w-none select-none"
-                    style={{
-                      width: image.width * scale,
-                      height: image.height * scale,
-                      transform: `translate(${x}px, ${y}px)`,
-                    }}
-                  />
-                ) : (
-                  <div className="flex h-full items-center justify-center font-mono text-sm text-white/50">
-                    이미지를 불러오는 중
-                  </div>
-                )}
-                <div
-                  className="pointer-events-none absolute inset-0 ring-1 ring-white/40"
-                  aria-hidden
-                />
-              </div>
+        <div className="mt-4 md:mt-6">
+          {chrome === "phone" ? (
+            <div className="mx-auto w-full max-w-[280px] rounded-[2rem] border-[10px] border-charcoal bg-charcoal p-1 shadow-xl">
+              <div className="mx-auto mb-1 h-4 w-16 rounded-full bg-black/50" />
+              {cropFrame}
+              <div className="mx-auto mt-1 h-1 w-10 rounded-full bg-white/25" />
             </div>
-          </div>
-
-          {showMobile ? (
-            <div className="shrink-0">
-              <p className="mb-2 text-center font-mono text-[10px] tracking-[0.16em] text-charcoal">
-                모바일 화면
-              </p>
-              <div
-                className="relative rounded-[2rem] border-[10px] border-charcoal bg-charcoal shadow-xl"
-                style={{ width: phoneWidth + 20 }}
-              >
-                <div className="mx-auto mt-1 h-4 w-16 rounded-full bg-black/50" />
-                <div
-                  className="relative mx-auto overflow-hidden bg-ink"
-                  style={{ width: phoneWidth, height: phoneHeight }}
-                >
-                  <div
-                    className="absolute top-0 overflow-hidden"
-                    style={{
-                      height: phoneHeight,
-                      width: phoneInnerWidth,
-                      left: (phoneWidth - phoneInnerWidth) / 2,
-                    }}
-                  >
-                    {image ? (
-                      <img
-                        src={src}
-                        alt=""
-                        draggable={false}
-                        className="absolute max-w-none select-none"
-                        style={{
-                          width: image.width * scale * phoneRatio,
-                          height: image.height * scale * phoneRatio,
-                          transform: `translate(${x * phoneRatio}px, ${y * phoneRatio}px)`,
-                        }}
-                      />
-                    ) : null}
-                  </div>
-                  <div
-                    className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-black/20"
-                    aria-hidden
-                  />
-                </div>
-                <div className="mx-auto my-2 h-1 w-10 rounded-full bg-white/25" />
+          ) : chrome === "desktop" ? (
+            <div className="mx-auto w-full max-w-2xl overflow-hidden border border-charcoal/20 shadow-xl">
+              <div className="flex h-7 items-center gap-1.5 bg-charcoal px-3">
+                <span className="h-2 w-2 rounded-full bg-white/25" />
+                <span className="h-2 w-2 rounded-full bg-white/25" />
+                <span className="h-2 w-2 rounded-full bg-white/25" />
+                <span className="ml-2 font-mono text-[9px] tracking-[0.14em] text-white/40">
+                  PC
+                </span>
               </div>
-              <p className="mt-2 max-w-[180px] text-center text-xs leading-relaxed text-charcoal/70">
-                휴대폰 풀화면입니다. 좌우가 잘리면 PC 미리보기에서 위치를
-                옮겨 주세요.
-              </p>
+              {cropFrame}
             </div>
-          ) : null}
+          ) : (
+            <div className="mx-auto w-full max-w-2xl">{cropFrame}</div>
+          )}
         </div>
 
         <label className="mt-6 block">

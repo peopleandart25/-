@@ -1,6 +1,7 @@
 export interface Banner {
   id: string;
   image: string;
+  imageMobile: string;
   title: string;
   subtitle: string;
   order: number;

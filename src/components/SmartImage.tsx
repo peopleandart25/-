@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 
 interface SmartImageProps {
   src: string;
+  mobileSrc?: string;
   alt: string;
   className?: string;
   imgClassName?: string;
@@ -12,6 +13,7 @@ interface SmartImageProps {
 
 export function SmartImage({
   src,
+  mobileSrc,
   alt,
   className = "",
   imgClassName = "",
@@ -33,7 +35,7 @@ export function SmartImage({
     } else if (image.complete) {
       setStatus("error");
     }
-  }, [src]);
+  }, [src, mobileSrc]);
 
   return (
     <div className={`relative overflow-hidden bg-charcoal ${className}`}>
@@ -52,19 +54,24 @@ export function SmartImage({
           <span className="font-mono text-[10px] tracking-[0.24em]">IMAGE</span>
         </div>
       ) : (
-        <img
-          ref={imgRef}
-          src={src}
-          alt={alt}
-          loading={priority ? "eager" : "lazy"}
-          decoding="async"
-          onLoad={() => setStatus("loaded")}
-          onError={() => setStatus("error")}
-          className={`h-full w-full ${fit === "contain" ? "object-contain" : "object-cover"} transition-[opacity,transform] duration-[800ms] ease-out ${
-            status === "loaded" ? "opacity-100" : "opacity-0"
-          } ${imgClassName}`}
-          style={{ objectPosition }}
-        />
+        <picture>
+          {mobileSrc ? (
+            <source media="(min-width: 768px)" srcSet={src} />
+          ) : null}
+          <img
+            ref={imgRef}
+            src={mobileSrc || src}
+            alt={alt}
+            loading={priority ? "eager" : "lazy"}
+            decoding="async"
+            onLoad={() => setStatus("loaded")}
+            onError={() => setStatus("error")}
+            className={`h-full w-full ${fit === "contain" ? "object-contain" : "object-cover"} transition-[opacity,transform] duration-[800ms] ease-out ${
+              status === "loaded" ? "opacity-100" : "opacity-0"
+            } ${imgClassName}`}
+            style={{ objectPosition }}
+          />
+        </picture>
       )}
     </div>
   );

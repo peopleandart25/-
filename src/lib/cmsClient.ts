@@ -75,6 +75,7 @@ export async function materializeImages(data: AgencyData, password: string) {
     banners.push({
       ...banner,
       image: await toHostedUrl(banner.image, password),
+      imageMobile: await toHostedUrl(banner.imageMobile ?? "", password),
     });
   }
 

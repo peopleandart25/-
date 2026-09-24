@@ -37,6 +37,7 @@ export function HomePage() {
           {
             id: "fallback",
             image: "",
+            imageMobile: "",
             title: BRAND_SHORT,
             subtitle: homeSlogan,
             order: 0,
@@ -74,10 +75,11 @@ export function HomePage() {
         {slides.map((slide, index) => (
           <SwiperSlide key={slide.id}>
             <div className="relative h-full w-full overflow-hidden bg-ink">
-              {slide.image ? (
+              {slide.image || slide.imageMobile ? (
                 <div className="absolute inset-0">
                   <SmartImage
-                    src={slide.image}
+                    src={slide.image || slide.imageMobile}
+                    mobileSrc={slide.imageMobile || undefined}
                     alt={slide.title || BRAND_SHORT}
                     priority={index === 0}
                     fit="cover"
