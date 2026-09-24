@@ -1,0 +1,110 @@
+{
+  "skip": "Skip to content",
+  "nav": {
+    "about": "ABOUT",
+    "artists": "ARTISTS",
+    "news": "NEWS",
+    "contact": "CONTACT",
+    "open": "Open menu",
+    "close": "Close menu",
+    "main": "Main menu",
+    "artistsSub": "Open artist categories"
+  },
+  "lang": {
+    "label": "Select language",
+    "ko": "KOR",
+    "en": "ENG",
+    "zh": "CHN"
+  },
+  "langShort": {
+    "ko": "KR",
+    "en": "EN",
+    "zh": "CN"
+  },
+  "home": {
+    "prev": "Previous banner",
+    "next": "Next banner",
+    "slogan": "YOUR MOMENT, OUR VISION."
+  },
+  "about": {
+    "kicker": "ABOUT",
+    "visionLabel": "VISION",
+    "headline": "MAKE YOUR OWN LIGHT.",
+    "slogan": "YOUR MOMENT, OUR VISION.",
+    "vision": "We design management and content so an artist’s own light lasts beyond the stage and the screen.",
+    "intro": "P.A(PEOPLE & ART) E&M discovers what makes each artist distinct and builds long-term careers together.",
+    "support": "From management to content, brand work, live performance, broadcasting, film, and global activity, we support the full arc of an artist’s work."
+  },
+  "artists": {
+    "kicker": "ARTISTS",
+    "all": "ALL",
+    "empty": "No artists have been added yet.",
+    "notFound": "Category not found.",
+    "back": "Back to ARTISTS",
+    "profile": "Go to {{name}}’s profile"
+  },
+  "artist": {
+    "notFound": "Artist not found.",
+    "back": "Back to ARTISTS",
+    "career": "CAREER",
+    "gallery": "GALLERY"
+  },
+  "news": {
+    "kicker": "NEWS",
+    "title": "News",
+    "intro": "Updates on works, releases, and interviews.",
+    "notFound": "This news item could not be found.",
+    "back": "Back to NEWS",
+    "empty": "No news has been posted yet."
+  },
+  "contact": {
+    "kicker": "CONTACT",
+    "headline1": "LET'S MAKE",
+    "headline2": "SOMETHING",
+    "headline3": "MEMORABLE.",
+    "intro": "For artist booking, brand work, content, and other inquiries.",
+    "name": "Name",
+    "company": "Company",
+    "phone": "Contact",
+    "type": "Inquiry type",
+    "typePlaceholder": "Please select",
+    "message": "Message",
+    "consent": "I agree to the collection and use of personal information for this inquiry.",
+    "send": "SEND MESSAGE",
+    "successKicker": "MESSAGE RECEIVED",
+    "successTitle": "We’ve received your message.",
+    "successBody": "We’ll reply within two business days. For urgent bookings, please call.",
+    "again": "Write another inquiry",
+    "missing": "Please fill in the required fields.",
+    "errName": "Please enter your name",
+    "errPhone": "Please enter your contact number",
+    "errType": "Please select an inquiry type",
+    "errMessage": "Please enter your message",
+    "errConsent": "Please agree to the privacy notice.",
+    "types": {
+      "booking": "Artist booking",
+      "artist": "Apply as an artist",
+      "brand": "Advertising & brand",
+      "broadcast": "Broadcast & live",
+      "content": "Content production",
+      "other": "Other"
+    }
+  },
+  "footer": {
+    "blurb": "P.A(PEOPLE & ART) E&M discovers the distinct appeal of actors, musicians, models, broadcasters, and creators, and grows with them.",
+    "visit": "VISIT",
+    "contact": "CONTACT",
+    "follow": "FOLLOW",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Use"
+  },
+  "category": {
+    "actor": "Actors",
+    "musician": "Musicians",
+    "creator": "Creators"
+  },
+  "common": {
+    "notFound": "NOT FOUND",
+    "management": "CREATIVE MANAGEMENT / SEOUL"
+  }
+}

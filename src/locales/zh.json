@@ -1,0 +1,110 @@
+{
+  "skip": "跳到正文",
+  "nav": {
+    "about": "ABOUT",
+    "artists": "ARTISTS",
+    "news": "NEWS",
+    "contact": "CONTACT",
+    "open": "打开菜单",
+    "close": "关闭菜单",
+    "main": "主导航",
+    "artistsSub": "打开艺人分类"
+  },
+  "lang": {
+    "label": "选择语言",
+    "ko": "KOR",
+    "en": "ENG",
+    "zh": "CHN"
+  },
+  "langShort": {
+    "ko": "KR",
+    "en": "EN",
+    "zh": "CN"
+  },
+  "home": {
+    "prev": "上一张",
+    "next": "下一张",
+    "slogan": "YOUR MOMENT, OUR VISION."
+  },
+  "about": {
+    "kicker": "ABOUT",
+    "visionLabel": "VISION",
+    "headline": "MAKE YOUR OWN LIGHT.",
+    "slogan": "YOUR MOMENT, OUR VISION.",
+    "vision": "我们与艺人共同规划经纪与内容，让属于他们的光芒在舞台与屏幕之外长久留存。",
+    "intro": "P.A(PEOPLE & ART) E&M 发掘每位艺人独特的魅力与可能，并一同规划长期职业生涯。",
+    "support": "以经纪为基础，覆盖内容策划、品牌合作、演出、放送、影像制作与全球活动，全面支持艺人发展。"
+  },
+  "artists": {
+    "kicker": "ARTISTS",
+    "all": "ALL",
+    "empty": "暂无艺人。",
+    "notFound": "未找到该分类。",
+    "back": "返回 ARTISTS",
+    "profile": "前往{{name}}的简介"
+  },
+  "artist": {
+    "notFound": "未找到该艺人。",
+    "back": "返回 ARTISTS",
+    "career": "CAREER",
+    "gallery": "GALLERY"
+  },
+  "news": {
+    "kicker": "NEWS",
+    "title": "资讯",
+    "intro": "作品、发行与访谈相关消息。",
+    "notFound": "未找到该资讯。",
+    "back": "返回 NEWS",
+    "empty": "暂无资讯。"
+  },
+  "contact": {
+    "kicker": "CONTACT",
+    "headline1": "LET'S MAKE",
+    "headline2": "SOMETHING",
+    "headline3": "MEMORABLE.",
+    "intro": "艺人洽询、品牌合作、内容制作及其他咨询。",
+    "name": "姓名",
+    "company": "公司",
+    "phone": "联系方式",
+    "type": "咨询类型",
+    "typePlaceholder": "请选择",
+    "message": "咨询内容",
+    "consent": "我同意为处理本次咨询而收集并使用个人信息。",
+    "send": "SEND MESSAGE",
+    "successKicker": "MESSAGE RECEIVED",
+    "successTitle": "我们已收到您的来信。",
+    "successBody": "将在两个工作日内回复。如需紧急洽询，请致电。",
+    "again": "填写其他咨询",
+    "missing": "请填写必填项。",
+    "errName": "请输入姓名",
+    "errPhone": "请输入联系方式",
+    "errType": "请选择咨询类型",
+    "errMessage": "请输入咨询内容",
+    "errConsent": "请同意个人信息收集条款。",
+    "types": {
+      "booking": "艺人洽询",
+      "artist": "艺人应募",
+      "brand": "广告及品牌合作",
+      "broadcast": "放送及演出",
+      "content": "内容制作",
+      "other": "其他"
+    }
+  },
+  "footer": {
+    "blurb": "P.A(PEOPLE & ART) E&M 发掘演员、歌手、模特、放送人与创作者的独特魅力，并与他们一同成长。",
+    "visit": "VISIT",
+    "contact": "CONTACT",
+    "follow": "FOLLOW",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Use"
+  },
+  "category": {
+    "actor": "演员",
+    "musician": "歌手",
+    "creator": "创作者"
+  },
+  "common": {
+    "notFound": "NOT FOUND",
+    "management": "CREATIVE MANAGEMENT / SEOUL"
+  }
+}
